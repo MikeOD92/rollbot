@@ -4,13 +4,14 @@ from dotenv import load_dotenv
 
 from discord.ext import commands
 
-# intents = discord.Intents.default()
-# intents.members = True
-# intents.guilds = True
-# intents.presences = True
+intents = discord.Intents.default()
+intents.members = True
+intents.guilds = True
+intents.presences = True
+
 load_dotenv()
 
-client = commands.Bot(command_prefix = '$')
+client = commands.Bot(command_prefix = '$', intents = intents)
 
 # client = discord.Client()
 @client.command()
@@ -25,6 +26,8 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         client.load_extension(f"cogs.{filename[:-3]}")
 
+# async def on_ready(ctx):
+#     print("_____//// Roll bot is Online ////-----")
 
 token = os.getenv('TOKEN')
 client.run(token)

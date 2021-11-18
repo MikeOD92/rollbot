@@ -83,135 +83,135 @@ def check(ctx):
 ############ Create /create-char
 
 async def create_character(client, message):
-    player = message.author.name
+#     player = message.author.name
 
-    #check if player has char sheet
+#     #check if player has char sheet
             
-    if collection.find_one({"player" : player}):
-        await message.channel.send('You already have a character. If you want to make a new character, you need to delete your current character by typing "/delete-character".')
+#     if collection.find_one({"player" : player}):
+#         await message.channel.send('You already have a character. If you want to make a new character, you need to delete your current character by typing "/delete-character".')
             
-    else:
-        player_sheet = {
-            "name": '',
-            "look": '',
-            "class": '',
-            "armor": 0,
-            "hitpoints": 0, 
-            "damage": 0,
-            "strength": 0,
-            "dexterity": 0,
-            "constitution": 0,
-            "inteligence": 0,
-            "wisdom": 0,
-            "charisma": 0,
-            "bonds": [],
-            "inventory":[]
-            }
+#     else:
+#         player_sheet = {
+#             "name": '',
+#             "look": '',
+#             "class": '',
+#             "armor": 0,
+#             "hitpoints": 0, 
+#             "damage": 0,
+#             "strength": 0,
+#             "dexterity": 0,
+#             "constitution": 0,
+#             "inteligence": 0,
+#             "wisdom": 0,
+#             "charisma": 0,
+#             "bonds": [],
+#             "inventory":[]
+#             }
 
-        starting_stats = ['16','15','13','12', '9', '8']
+#         starting_stats = ['16','15','13','12', '9', '8']
 
-        await message.channel.send('Hello Traveler')
+#         await message.channel.send('Hello Traveler')
                 
-        for i in player_sheet:
-            if i == "name":
-                await message.channel.send('What is your name ?')
-                name = await client.wait_for('message', check=check(message)) 
-                player_sheet["name"] = name.content
-            elif i == "look":
-                await message.channel.send('Descibe your appearance.')
-                look = await client.wait_for('message', check=check(message))
-                player_sheet['look'] = look.content
-            elif i == 'armor' or i == "hitpoints" or i == "damage" or i == "bonds" or i == "inventory":
-                pass
-            elif i == "class":
-                await message.channel.send(f" choose your character's class from this list: {class_list}")
+#         for i in player_sheet:
+#             if i == "name":
+#                 await message.channel.send('What is your name ?')
+#                 name = await client.wait_for('message', check=check(message)) 
+#                 player_sheet["name"] = name.content
+#             elif i == "look":
+#                 await message.channel.send('Descibe your appearance.')
+#                 look = await client.wait_for('message', check=check(message))
+#                 player_sheet['look'] = look.content
+#             elif i == 'armor' or i == "hitpoints" or i == "damage" or i == "bonds" or i == "inventory":
+#                 pass
+#             elif i == "class":
+#                 await message.channel.send(f" choose your character's class from this list: {class_list}")
 
-                valid_ans = False
-                while valid_ans == False:
-                    #### this is how we would implement check that we need to test
-                    response = await client.wait_for('message', check=check(message))
+#                 valid_ans = False
+#                 while valid_ans == False:
+#                     #### this is how we would implement check that we need to test
+#                     response = await client.wait_for('message', check=check(message))
 
-                    if response.content in class_list:
-                        player_sheet[i] = response.content
-                        player_sheet['damage'] = class_damage(response.content)
-                        player_sheet['bonds'] = class_bonds(response.content)
-                        valid_ans = True
-                    else:
-                        await message.channel.send(f'choose a valid class {class_list}')
-            else:
-                await message.channel.send(f"choose a value from this list: {starting_stats} to assign to your {i}")
+#                     if response.content in class_list:
+#                         player_sheet[i] = response.content
+#                         player_sheet['damage'] = class_damage(response.content)
+#                         player_sheet['bonds'] = class_bonds(response.content)
+#                         valid_ans = True
+#                     else:
+#                         await message.channel.send(f'choose a valid class {class_list}')
+#             else:
+#                 await message.channel.send(f"choose a value from this list: {starting_stats} to assign to your {i}")
 
-                valid_ans = False
-                while valid_ans == False:
-                    response = await client.wait_for('message', check=check(message))
+#                 valid_ans = False
+#                 while valid_ans == False:
+#                     response = await client.wait_for('message', check=check(message))
 
-                    if response.content in starting_stats:
-                        starting_stats.pop(starting_stats.index(response.content))
-                        player_sheet[i] = response.content
-                        valid_ans = True
-                    else:
-                        await message.channel.send(f'choose a valid value {starting_stats}')
+#                     if response.content in starting_stats:
+#                         starting_stats.pop(starting_stats.index(response.content))
+#                         player_sheet[i] = response.content
+#                         valid_ans = True
+#                     else:
+#                         await message.channel.send(f'choose a valid value {starting_stats}')
         
-        player_sheet['hitpoints'] = int(player_sheet['constitution']) + class_hp(player_sheet["class"])
+#         player_sheet['hitpoints'] = int(player_sheet['constitution']) + class_hp(player_sheet["class"])
 
-        inventory = class_gear(player_sheet["class"])
+#         inventory = class_gear(player_sheet["class"])
 
-        for i in inventory:
-            if type(i) == list:
-                item_check = []
-                base_txt = "choose one of these item: \n ------------ \n "
-                for c in i: 
-                    base_txt = base_txt + f" - {c['name']} \n"
-                    item_check.append(c["name"])
+#         for i in inventory:
+#             if type(i) == list:
+#                 item_check = []
+#                 base_txt = "choose one of these item: \n ------------ \n "
+#                 for c in i: 
+#                     base_txt = base_txt + f" - {c['name']} \n"
+#                     item_check.append(c["name"])
 
-                await message.channel.send(base_txt)
-                item = await client.wait_for("message", check=check(message))
-                valid_ans = False
-                while valid_ans == False:
-                    if item.content in item_check:
-                        player_sheet['inventory'].append(i[item_check.index(item.content)])
-                        await message.channel.send(f"{i[item_check.index(item.content)]['name']} has been added to your inventory")
-                        valid_ans = True
-                    else:
-                        await message.channel.send("chose a valid item")
-                        item = await client.wait_for("message", check=check(message))
-            elif i["info"] == "special-item":
+#                 await message.channel.send(base_txt)
+#                 item = await client.wait_for("message", check=check(message))
+#                 valid_ans = False
+#                 while valid_ans == False:
+#                     if item.content in item_check:
+#                         player_sheet['inventory'].append(i[item_check.index(item.content)])
+#                         await message.channel.send(f"{i[item_check.index(item.content)]['name']} has been added to your inventory")
+#                         valid_ans = True
+#                     else:
+#                         await message.channel.send("chose a valid item")
+#                         item = await client.wait_for("message", check=check(message))
+#             elif i["info"] == "special-item":
 
-                await message.channel.send(f" Your {i['name']} is {i['prompt']}, describe it.")
-                description = await client.wait_for("message", check=check(message))
+#                 await message.channel.send(f" Your {i['name']} is {i['prompt']}, describe it.")
+#                 description = await client.wait_for("message", check=check(message))
 
-                i["description"] = description.content
-                player_sheet["inventory"].append(i)
+#                 i["description"] = description.content
+#                 player_sheet["inventory"].append(i)
 
-            else: 
-                player_sheet['inventory'].append(i)
-                await message.channel.send(f" { i['name'] } has been added to your inventory")
+#             else: 
+#                 player_sheet['inventory'].append(i)
+#                 await message.channel.send(f" { i['name'] } has been added to your inventory")
 
 
-        # print finished player-sheet
-        await message.channel.send('player sheet:')
+#         # print finished player-sheet
+#         await message.channel.send('player sheet:')
 
-        collection.insert_one({
-            "player" : player,      
-            "name": player_sheet['name'],
-            "look": player_sheet['look'],
-            "class": player_sheet["class"],
-            "armor": 0,
-            "hitpoints": player_sheet['hitpoints'], 
-            "damage": player_sheet['damage'],
-            "strength": player_sheet['strength'],
-            "dexterity": player_sheet['dexterity'],
-            "constitution": player_sheet['constitution'],
-            "inteligence": player_sheet['inteligence'],
-            "wisdom": player_sheet['wisdom'],
-            "charisma": player_sheet['charisma'],
-            "bonds" : player_sheet['bonds'],
-            "inventory": player_sheet["inventory"]
-            })
+#         collection.insert_one({
+#             "player" : player,      
+#             "name": player_sheet['name'],
+#             "look": player_sheet['look'],
+#             "class": player_sheet["class"],
+#             "armor": 0,
+#             "hitpoints": player_sheet['hitpoints'], 
+#             "damage": player_sheet['damage'],
+#             "strength": player_sheet['strength'],
+#             "dexterity": player_sheet['dexterity'],
+#             "constitution": player_sheet['constitution'],
+#             "inteligence": player_sheet['inteligence'],
+#             "wisdom": player_sheet['wisdom'],
+#             "charisma": player_sheet['charisma'],
+#             "bonds" : player_sheet['bonds'],
+#             "inventory": player_sheet["inventory"]
+#             })
 
-        sheet = collection.find_one({"player" : player})
-        await player_sheet_reader(message, sheet)
-########## Read /view-sheet
+#         sheet = collection.find_one({"player" : player})
+#         await player_sheet_reader(message, sheet)
+# ########## Read /view-sheet
 
 async def view_sheet(message):
     player = message.author.name
@@ -297,18 +297,18 @@ async def bonds(client, message):
 ############## Delete /delete-character/
 
 async def delete_sheet(client, message):
-    player = message.author
-    sheet = collection.find_one({"player": player.name}) # data is just the parsed out bit and deleteing it wont affect the db
-    if sheet:
-        await message.channel.send(f"are you sure you want to delete your character {sheet['name']} - Y / N ")
-        answer = await client.wait_for('message', check=check(message))
+    # player = message.author
+    # sheet = collection.find_one({"player": player.name}) # data is just the parsed out bit and deleteing it wont affect the db
+    # if sheet:
+    #     await message.channel.send(f"are you sure you want to delete your character {sheet['name']} - Y / N ")
+    #     answer = await client.wait_for('message', check=check(message))
 
-        if answer.content.upper() == 'Y':
-            await message.channel.send('your character sheet has been destroyed')
-            collection.delete_one({"player": player.name})
-        else:
-            await message.channel.send('character not deleted')
-            return 
+    #     if answer.content.upper() == 'Y':
+    #         await message.channel.send('your character sheet has been destroyed')
+    #         collection.delete_one({"player": player.name})
+    #     else:
+    #         await message.channel.send('character not deleted')
+    #         return 
 
-    else:
-        await message.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
+    # else:
+    #     await message.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
