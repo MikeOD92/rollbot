@@ -1,4 +1,5 @@
 ##### imports
+import discord
 import os
 import random
 from pymongo import MongoClient
@@ -17,114 +18,161 @@ def check(ctx):
     def inner(msg):
         return msg.author == ctx.author
     return inner
-        
-# basic dice function 
-# needs new roll + atr function 
-async def dice(input, message):
 
-    roll = input.split('roll', 1)[1]
+
+class Dice_commands(commands.Cog):
     
-    sheet = collection.find_one({'player': message.author.name})
+    def __init__(self, bot):
+        self.bot = bot
 
-    if(roll.split('d')[0] == " " or roll.split('d')[0] == "" ):
-        num = 1
-    else:
-        num = int(float(roll.split('d')[0]))
-
-        sides = int(float(roll.split('d')[1]))
-
-        total = 0
-
-        rolls = range(1,num + 1)
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.id == self.user.id:
+            return
         
-        rolling_txt = ""
+        msg = message.content
 
-        for n in rolls:
-            rolled_num = random.randint(1,sides)
-            rolling_txt = rolling_txt + f"... {rolled_num} "
-            total = rolled_num + total
+        if msg.starts_with('/damage'):
+            player = message.author.name
 
-        await message.channel.send(f"{sheet['name']} ({message.author.name}) rolled {str(roll)} \n {rolling_txt} \n a total of {str(total)}")  
-        return total
+            sheet = collection.find_one({'player': player})
+            dice = sheet['damage']
 
-async def roll_plus_attr(input, message):
+            max = int(dice.split('d', 1)[1])
+            rolled = random.randint(1,max)
+            rolling_txt = f"... {rolled} "
 
-    temp = input.split('roll', 1)[1]
+            await message.channel.send(f"{sheet['name']} rolled {dice} for damage \n {rolling_txt} \n do you need to roll additional dice? Y/N")
+            answer = await client.wait_for('message', check=check(message))
 
-    roll = temp.split('+ ')[0]
-    attr = temp.split('+ ')[1]
+            if answer.content.upper() == 'Y':
+                await message.channel.send('roll')
+                roll = await client.wait_for('message', check=check(message))
 
-    sheet = collection.find_one({'player': message.author.name})
+                num = int(float(roll.content.split('d')[0]))
+                sides = int(float(roll.content.split('d')[1]))
 
-    if(roll.split('d')[0] == " " or roll.split('d')[0] == "" ):
-        num = 1
-    else:
-        num = int(float(roll.split('d')[0]))
+                rolling_text = ""
+                
+                for n in range(num):
+                    roll = random.randint(1,sides)
+                    rolled += roll
+                    rolling_text += f"... {roll}"
+                    
+                await message.channel.send(f"{rolling_text} \n {sheet['name']} did {rolled} damage")
 
-        sides = int(float(roll.split('d')[1]))
+            else:
+                return 
 
-        total = 0
 
-        rolls = range(1,num + 1)
+
+    # basic dice function 
+    # needs new roll + atr function 
+    async def dice(self, message):
+
+        roll = message.content.split('roll', 1)[1]
         
-        rolling_txt = ""
+        sheet = collection.find_one({'player': message.author.name})
 
-        for n in rolls:
-            rolled_num = random.randint(1,sides)
-            rolling_txt = rolling_txt + f"... {rolled_num} "
-            total = rolled_num + total
+        if(roll.split('d')[0] == " " or roll.split('d')[0] == "" ):
+            num = 1
+        else:
+            num = int(float(roll.split('d')[0]))
 
-        if int(sheet[attr]) < 3:
-            total -= 3
-        elif int(sheet[attr]) <= 5:
-            total -= 2
-        elif int(sheet[attr]) <= 8:
-            total -= 1
-        elif int(sheet[attr]) <= 12:
-            total = total
-        elif int(sheet[attr]) <= 15:
-            total += 1
-        elif int(sheet[attr]) <= 17:
-            total += 2
-        elif int(sheet[attr]) > 17:
-            total += 3
+            sides = int(float(roll.split('d')[1]))
 
-        await message.channel.send(f"{sheet['name']}({message.author.name}) rolled {str(roll)} \n {rolling_txt} \n and their {attr} modifier makes it a total of {str(total)}")  
-        return total + int(sheet[attr]) 
+            total = 0
 
-
-    await message.channel.send(f"roll var: {roll} attr var: {attr}")
-
-async def roll_damage(input, message, client):
-
-    player = message.author.name
-
-    sheet = collection.find_one({'player': player})
-    dice = sheet['damage']
-
-    max = int(dice.split('d', 1)[1])
-    rolled = random.randint(1,max)
-    rolling_txt = f"... {rolled} "
-
-    await message.channel.send(f"{sheet['name']} rolled {dice} for damage \n {rolling_txt} \n do you need to roll additional dice? Y/N")
-    answer = await client.wait_for('message', check=check(message))
-
-    if answer.content.upper() == 'Y':
-        await message.channel.send('roll')
-        roll = await client.wait_for('message', check=check(message))
-
-        num = int(float(roll.content.split('d')[0]))
-        sides = int(float(roll.content.split('d')[1]))
-
-        rolling_text = ""
-        
-        for n in range(num):
-            roll = random.randint(1,sides)
-            rolled += roll
-            rolling_text += f"... {roll}"
+            rolls = range(1,num + 1)
             
-        await message.channel.send(f"{rolling_text} \n {sheet['name']} did {rolled} damage")
+            rolling_txt = ""
 
-    else:
-        return 
+            for n in rolls:
+                rolled_num = random.randint(1,sides)
+                rolling_txt = rolling_txt + f"... {rolled_num} "
+                total = rolled_num + total
+
+            await message.channel.send(f"{sheet['name']} ({message.author.name}) rolled {str(roll)} \n {rolling_txt} \n a total of {str(total)}")  
+            return total
+
+    async def roll_plus_attr(self, message):
+
+        temp = message.content.split('roll', 1)[1]
+
+        roll = temp.split('+ ')[0]
+        attr = temp.split('+ ')[1]
+
+        sheet = collection.find_one({'player': message.author.name})
+
+        if(roll.split('d')[0] == " " or roll.split('d')[0] == "" ):
+            num = 1
+        else:
+            num = int(float(roll.split('d')[0]))
+
+            sides = int(float(roll.split('d')[1]))
+
+            total = 0
+
+            rolls = range(1,num + 1)
+            
+            rolling_txt = ""
+
+            for n in rolls:
+                rolled_num = random.randint(1,sides)
+                rolling_txt = rolling_txt + f"... {rolled_num} "
+                total = rolled_num + total
+
+            if int(sheet[attr]) < 3:
+                total -= 3
+            elif int(sheet[attr]) <= 5:
+                total -= 2
+            elif int(sheet[attr]) <= 8:
+                total -= 1
+            elif int(sheet[attr]) <= 12:
+                total = total
+            elif int(sheet[attr]) <= 15:
+                total += 1
+            elif int(sheet[attr]) <= 17:
+                total += 2
+            elif int(sheet[attr]) > 17:
+                total += 3
+
+            await message.channel.send(f"{sheet['name']}({message.author.name}) rolled {str(roll)} \n {rolling_txt} \n and their {attr} modifier makes it a total of {str(total)}")  
+            return total + int(sheet[attr]) 
+
+
+        await message.channel.send(f"roll var: {roll} attr var: {attr}")
+
+    async def roll_damage( message, client):
+
+        player = message.author.name
+
+        sheet = collection.find_one({'player': player})
+        dice = sheet['damage']
+
+        max = int(dice.split('d', 1)[1])
+        rolled = random.randint(1,max)
+        rolling_txt = f"... {rolled} "
+
+        await message.channel.send(f"{sheet['name']} rolled {dice} for damage \n {rolling_txt} \n do you need to roll additional dice? Y/N")
+        answer = await client.wait_for('message', check=check(message))
+
+        if answer.content.upper() == 'Y':
+            await message.channel.send('roll')
+            roll = await client.wait_for('message', check=check(message))
+
+            num = int(float(roll.content.split('d')[0]))
+            sides = int(float(roll.content.split('d')[1]))
+
+            rolling_text = ""
+            
+            for n in range(num):
+                roll = random.randint(1,sides)
+                rolled += roll
+                rolling_text += f"... {roll}"
+                
+            await message.channel.send(f"{rolling_text} \n {sheet['name']} did {rolled} damage")
+
+        else:
+            return 
 
