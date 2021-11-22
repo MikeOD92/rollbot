@@ -1,6 +1,6 @@
 class Printer():
 
-    async def sheet_reader(self, client, data):
+    async def sheet_reader(self, ctx, data):
         text = "----------------------------------\n"
     
         bonds = ""
@@ -19,12 +19,17 @@ class Printer():
         for key in data:
             if key == "_id" or key == "player":
                 pass
-            elif key == "look" or key == "damage" or key == "charisma":
-                text = text + f"---- {key} : {data[key]} ---- \n ---------------------------------- \n"
+            elif key == "name":
+                text = text + f"\n-------------| {data[key]} |-------------\n"
+            # elif key == "look" or key == "damage" or key == "charisma":
+            #     text = text + f"---- {key} : {data[key]} ---- \n ---------------------------------- \n"
+            elif key == "strength":
+                text = text + f"\n-------------| Skills |------------- \n \n ---- {key} : {data[key]} ---- \n"
             elif key == "bonds":
-                text = text + f"-------------| Bonds |------------- \n \n {bonds}"
+                text = text + f"\n-------------| Bonds |------------- \n \n {bonds}"
             elif key == "inventory":
                 text = text + inventory
             else:
                 text = text + f"---- {key} : {data[key]} ---- \n"
-        await client.channel.send(text)
+        await ctx.channel.send(text)
+

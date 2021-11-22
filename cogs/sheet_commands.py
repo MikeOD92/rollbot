@@ -18,49 +18,25 @@ cluster = MongoClient(URI)
 db = cluster["Roll_bot"]
 collection = db["character_sheets"]
 
-# class Printer():
-
-#     async def sheet_reader(ctx, data):
-#         text = "----------------------------------\n"
-    
-#         bonds = ""
-#         inventory = f"\n -------------| Inventory |------------- \n \n"
-#         for b in data["bonds"]:
-#             bonds = bonds + f"-- {b} -- \n"
-
-#         for i in data["inventory"]:
-#             if i["info"] == "special-item":
-#                 inventory = inventory + "---" + i["name"] + " : "+ i["description"] + "---\n"
-#             elif i["info"] == "weapon":
-#                 inventory = inventory + "---" + i["name"] + "\n + damage: "+ str(i["damage"]) + "\n"
-#             else:
-#                 inventory = inventory + "---" + i["name"] + "---\n"
-
-#         for key in data:
-#             if key == "_id" or key == "player":
-#                 pass
-#             elif key == "look" or key == "damage" or key == "charisma":
-#                 text = text + f"---- {key} : {data[key]} ---- \n ---------------------------------- \n"
-#             elif key == "bonds":
-#                 text = text + f"-------------| Bonds |------------- \n \n {bonds}"
-#             elif key == "inventory":
-#                 text = text + inventory
-#             else:
-#                 text = text + f"---- {key} : {data[key]} ---- \n"
-#         await ctx.channel.send(text)
-
 class Sheet_commands(commands.Cog):
     def __init__(self, client):
         self.client = client
         
-    def check(self, ctx):
-        msg = ctx.author
-        def inner(msg):
-            return msg == ctx.author
-        return inner
+    # def check(self, ctx):
+    #     msg = ctx.author
+    #     print("is this working")
+    #     print(msg)
+    #     def inner(msg):
+    #         return msg == ctx.author
+    #     return inner
+
+    # need to make the check work
 
     # switches 
     # - these switches can maybe be reduced down to a single function which takes another argument for what to grab 
+    def class_switch(self, i, attr):
+        print("wowie")
+
 
     def class_damage(self, i):
         switch = {
@@ -133,6 +109,8 @@ class Sheet_commands(commands.Cog):
     @commands.command()
     async def create_char(self,ctx):
         player = ctx.message.author.name
+        printer = Printer()
+
         #check if player has char sheet
             
         if collection.find_one({"player" : player}):
@@ -163,11 +141,11 @@ class Sheet_commands(commands.Cog):
             for i in player_sheet:
                 if i == "name":
                     await ctx.channel.send('What is your name ?')
-                    name = await self.client.wait_for('message', check=self.check(ctx) )
+                    name = await self.client.wait_for('message') # , check=self.check(ctx) 
                     player_sheet["name"] = name.content
                 elif i == "look":
                     await ctx.channel.send('Descibe your appearance.')
-                    look = await self.client.wait_for('message', check=self.check(ctx)) 
+                    look = await self.client.wait_for('message') # , check=self.check(ctx) 
                     player_sheet['look'] = look.content
                 elif i == 'armor' or i == "hitpoints" or i == "damage" or i == "bonds" or i == "inventory":
                     pass
@@ -177,7 +155,7 @@ class Sheet_commands(commands.Cog):
                     valid_ans = False
                     while valid_ans == False:
                         #### this is how we would implement check that we need to test
-                        response = await self.client.wait_for('message', check=self.check(ctx)) 
+                        response = await self.client.wait_for('message') #, check=self.check(ctx)  
 
                         if response.content in class_list:
                             player_sheet[i] = response.content
@@ -192,7 +170,7 @@ class Sheet_commands(commands.Cog):
 
                     valid_ans = False
                     while valid_ans == False:
-                        response = await self.client.wait_for('message', check=self.check(ctx))
+                        response = await self.client.wait_for('message') #, check=self.check(ctx)
 
                         if response.content in starting_stats:
                             starting_stats.pop(starting_stats.index(response.content))
@@ -214,7 +192,7 @@ class Sheet_commands(commands.Cog):
                         item_check.append(c["name"])
 
                     await ctx.channel.send(base_txt)
-                    item = await self.client.wait_for("message", check=self.check(ctx))
+                    item = await self.client.wait_for("message") #, check=self.check(ctx)
                     valid_ans = False
                     while valid_ans == False:
                         if item.content in item_check:
@@ -223,11 +201,11 @@ class Sheet_commands(commands.Cog):
                             valid_ans = True
                         else:
                             await ctx.channel.send("chose a valid item")
-                            item = await self.client.wait_for("message", check=self.check(ctx))
+                            item = await self.client.wait_for("message") #, check=self.check(ctx)
                 elif i["info"] == "special-item":
 
                     await ctx.channel.send(f" Your {i['name']} is {i['prompt']}, describe it.")
-                    description = await self.client.wait_for("message", check=self.check(ctx)) 
+                    description = await self.client.wait_for("message") #, check=self.check(ctx) 
 
                     i["description"] = description.content
                     player_sheet["inventory"].append(i)
@@ -259,10 +237,10 @@ class Sheet_commands(commands.Cog):
                 })
 
             sheet = collection.find_one({"player" : player})
-            await player_sheet_reader(ctx, sheet)
+
+            await printer.sheet_reader(ctx, sheet)
     
     ## Read - $view_sheet
-        # update the printer to be class based?
     @commands.command()
     async def read(self, ctx):
         player = ctx.author.name
@@ -274,10 +252,85 @@ class Sheet_commands(commands.Cog):
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
-    ## Update - $lvl_up
 
-        # bonds - $bonds
+    ## Update - $lvl_up  ## this is kind of screwed up now that we've added inventory and bonds 
+    # probably best to also not update the sheet on every change 
+    # but to send it all up on the end as a single update
+    @commands.command()
+    async def lvl_up(self, ctx):
+        player = ctx.author.name
+        sheet = collection.find_one({"player" : player})
+        printer = Printer()
+                
+        player_sheet = {
+            "player" : sheet['player'],      
+            "name": sheet['name'],
+            "look": sheet['look'],
+            "class": sheet['class'],
+            "armor": sheet['armor'],
+            "hitpoints": sheet['hitpoints'], 
+            "damage": sheet['damage'],
+            "strength": sheet['strength'],
+            "dexterity": sheet['dexterity'],
+            "constitution": sheet['constitution'],
+            "inteligence": sheet['inteligence'],
+            "wisdom": sheet['wisdom'],
+            "charisma": sheet['charisma']
+        }
+        for key in player_sheet:
+            if key == '_id' or key == 'player' or key == "class":
+                pass
+            else:
+                await ctx.channel.send(f" would you like to update your {key}? y/n")
+                answer = await self.client.wait_for('message') #, check=self.check(ctx)
+                if answer.content.upper() == 'Y':
+                    await ctx.channel.send(f" {key}:{player_sheet[key]} should equal what?")
+                    update_answer = await self.client.wait_for('message') #, check=self.check(ctx)
+                    player_sheet[key] = update_answer.content
+                    collection.replace_one({'player': player }, player_sheet, upsert=False)
+                else:
+                    await ctx.channel.send('okay then')
+
+        sheet = collection.find_one({"player" : player})          
+        await printer.sheet_reader(ctx, sheet)
     
+
+    # bonds - $bonds
+    @commands.command()
+    async def bonds(self, ctx):
+        player = ctx.author
+        sheet = collection.find_one({"player": player.name})
+
+        bonds = self.class_bonds(sheet["class"])
+        guild = self.client.get_guild(player.guild.id)
+        players = []
+
+        for member in guild.members:
+    
+            if str(member.status) == 'online' and member.bot != True and member.name != player.name:
+            # if member.bot != True and member.name != player.name:
+                memb_sheet = collection.find_one({"player": member.name})
+                memb_name = memb_sheet["name"]
+                players.append(memb_name.lower())
+                # players.append(member.name)
+
+        for i,b in enumerate(bonds):
+
+            txt = f"selected a player from this list {players} for your bond: \n"
+            await ctx.channel.send(txt + b)
+
+            response = await self.client.wait_for('message') # check = self.check(ctx)
+
+            if response.content.lower() in players:
+                players.pop(players.index(response.content.lower()))
+                bonds[i] = bonds[i].replace('character-name', response.content)
+
+        sheet['bonds'] = bonds
+        collection.replace_one({'player': player.name }, sheet, upsert=False)
+        printer = Printer()
+        await printer.sheet_reader(ctx, sheet)
+
+
     ## Delete - $delete_character
     @commands.command()
     async def delete_character(self, ctx):
@@ -285,7 +338,7 @@ class Sheet_commands(commands.Cog):
         sheet = collection.find_one({"player": player.name}) # data is just the parsed out bit and deleteing it wont affect the db
         if sheet:
             await ctx.channel.send(f"are you sure you want to delete your character {sheet['name']} - Y / N ")
-            answer = await self.client.wait_for('message', check= self.check(ctx)) 
+            answer = await self.client.wait_for('message') #, check=self.check(ctx) 
             if answer.content.upper() == 'Y':
                 await ctx.channel.send('your character sheet has been destroyed')
                 collection.delete_one({"player": player.name})
@@ -295,6 +348,7 @@ class Sheet_commands(commands.Cog):
 
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
+
 
 def setup(client):
     client.add_cog(Sheet_commands(client))

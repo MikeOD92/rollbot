@@ -224,41 +224,41 @@ async def view_sheet(message):
 
 ############ Update /lvl-up
 
-async def lvl_up(client, message):
-    player = message.author
-    sheet = collection.find_one({"player" : player.name})
+# async def lvl_up(client, message):
+#     player = message.author
+#     sheet = collection.find_one({"player" : player.name})
             
-    player_sheet = {
-        "player" : sheet['player'],      
-        "name": sheet['name'],
-        "look": sheet['look'],
-        "class": sheet['class'],
-        "armor": sheet['armor'],
-        "hitpoints": sheet['hitpoints'], 
-        "damage": sheet['damage'],
-        "strength": sheet['strength'],
-        "dexterity": sheet['dexterity'],
-        "constitution": sheet['constitution'],
-        "inteligence": sheet['inteligence'],
-        "wisdom": sheet['wisdom'],
-        "charisma": sheet['charisma']
-    }
-    for key in player_sheet:
-        if key == '_id' or key == 'player' or key == "class":
-            pass
-        else:
-            await message.channel.send(f" would you like to update your {key}? y/n")
-            answer = await client.wait_for('message', check=check(message))
-            if answer.content.upper() == 'Y':
-                await message.channel.send(f" {key}:{player_sheet[key]} should equal what?")
-                update_answer = await client.wait_for('message', check=check(message))
-                player_sheet[key] = update_answer.content
-                collection.replace_one({'player': player.name }, player_sheet, upsert=False)
-            else:
-                await message.channel.send('okay then')
+#     player_sheet = {
+#         "player" : sheet['player'],      
+#         "name": sheet['name'],
+#         "look": sheet['look'],
+#         "class": sheet['class'],
+#         "armor": sheet['armor'],
+#         "hitpoints": sheet['hitpoints'], 
+#         "damage": sheet['damage'],
+#         "strength": sheet['strength'],
+#         "dexterity": sheet['dexterity'],
+#         "constitution": sheet['constitution'],
+#         "inteligence": sheet['inteligence'],
+#         "wisdom": sheet['wisdom'],
+#         "charisma": sheet['charisma']
+#     }
+#     for key in player_sheet:
+#         if key == '_id' or key == 'player' or key == "class":
+#             pass
+#         else:
+#             await message.channel.send(f" would you like to update your {key}? y/n")
+#             answer = await client.wait_for('message', check=check(message))
+#             if answer.content.upper() == 'Y':
+#                 await message.channel.send(f" {key}:{player_sheet[key]} should equal what?")
+#                 update_answer = await client.wait_for('message', check=check(message))
+#                 player_sheet[key] = update_answer.content
+#                 collection.replace_one({'player': player.name }, player_sheet, upsert=False)
+#             else:
+#                 await message.channel.send('okay then')
 
-    sheet = collection.find_one({"player" : player.name})          
-    await player_sheet_reader(message, sheet)
+#     sheet = collection.find_one({"player" : player.name})          
+#     await player_sheet_reader(message, sheet)
 
 ############# Bonds 
 async def bonds(client, message):
