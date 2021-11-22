@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 
 #######
-from printer import player_sheet_reader
+from printer import Printer
 from character_classes import class_list, barbarian, bard, cleric, druid, fighter, immolator, paladin, ranger, thief, wizard
 ## both of these imports should be reworked to be class based ie: not floating functions. 
 
@@ -18,6 +18,36 @@ cluster = MongoClient(URI)
 db = cluster["Roll_bot"]
 collection = db["character_sheets"]
 
+# class Printer():
+
+#     async def sheet_reader(ctx, data):
+#         text = "----------------------------------\n"
+    
+#         bonds = ""
+#         inventory = f"\n -------------| Inventory |------------- \n \n"
+#         for b in data["bonds"]:
+#             bonds = bonds + f"-- {b} -- \n"
+
+#         for i in data["inventory"]:
+#             if i["info"] == "special-item":
+#                 inventory = inventory + "---" + i["name"] + " : "+ i["description"] + "---\n"
+#             elif i["info"] == "weapon":
+#                 inventory = inventory + "---" + i["name"] + "\n + damage: "+ str(i["damage"]) + "\n"
+#             else:
+#                 inventory = inventory + "---" + i["name"] + "---\n"
+
+#         for key in data:
+#             if key == "_id" or key == "player":
+#                 pass
+#             elif key == "look" or key == "damage" or key == "charisma":
+#                 text = text + f"---- {key} : {data[key]} ---- \n ---------------------------------- \n"
+#             elif key == "bonds":
+#                 text = text + f"-------------| Bonds |------------- \n \n {bonds}"
+#             elif key == "inventory":
+#                 text = text + inventory
+#             else:
+#                 text = text + f"---- {key} : {data[key]} ---- \n"
+#         await ctx.channel.send(text)
 
 class Sheet_commands(commands.Cog):
     def __init__(self, client):
@@ -96,7 +126,10 @@ class Sheet_commands(commands.Cog):
     async def on_ready(self):
         print("_____//// Roll bot has loaded sheet_commands ////-----") 
 
-    # C R U D - Create
+        # C R U D 
+    ###################
+
+    # Create - $create_char
     @commands.command()
     async def create_char(self,ctx):
         player = ctx.message.author.name
@@ -228,10 +261,24 @@ class Sheet_commands(commands.Cog):
             sheet = collection.find_one({"player" : player})
             await player_sheet_reader(ctx, sheet)
     
-    #
+    ## Read - $view_sheet
+        # update the printer to be class based?
+    @commands.command()
+    async def read(self, ctx):
+        player = ctx.author.name
+        printer = Printer()
 
+        if collection.find_one({"player": player}):
+            sheet = collection.find_one({"player" : player})
+            await printer.sheet_reader(ctx, sheet)
+        else:
+            await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
-    ## Destroy 
+    ## Update - $lvl_up
+
+        # bonds - $bonds
+    
+    ## Delete - $delete_character
     @commands.command()
     async def delete_character(self, ctx):
         player = ctx.message.author

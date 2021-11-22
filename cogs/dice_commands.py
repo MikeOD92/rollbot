@@ -139,7 +139,5 @@ class Dice_commands(commands.Cog):
         await ctx.channel.send(f"roll var: {roll} attr var: {attr}")
 
 
-
-
 def setup(client):
     client.add_cog(Dice_commands(client))
