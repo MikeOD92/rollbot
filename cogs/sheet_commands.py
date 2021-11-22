@@ -35,8 +35,19 @@ class Sheet_commands(commands.Cog):
     # switches 
     # - these switches can maybe be reduced down to a single function which takes another argument for what to grab 
     def class_switch(self, i, attr):
-        print("wowie")
-
+        switch = {
+            'barbarian': barbarian[attr],
+            'bard': bard[attr],
+            'cleric': cleric[attr],
+            'druid': druid[attr],
+            'fighter': fighter[attr],
+            'immolator': immolator[attr],
+            'paladin': paladin[attr],
+            'ranger': ranger[attr],
+            'thief': thief[attr],
+            'wizard': wizard[attr],
+        }
+        return (switch.get(i))
 
     def class_damage(self, i):
         switch = {
@@ -160,8 +171,9 @@ class Sheet_commands(commands.Cog):
                         if response.content in class_list:
                             player_sheet[i] = response.content
                             print(player_sheet[i])
-                            player_sheet['damage'] = self.class_damage(response.content)
-                            player_sheet['bonds'] = self.class_bonds(response.content)
+                            player_sheet['damage'] = self.class_switch(response.content, "damage") #self.class_damage(response.content)
+                            player_sheet['bonds'] = self.class_switch(response.content, 'bonds')
+                            #self.class_bonds(response.content)
                             valid_ans = True
                         else:
                             await ctx.channel.send(f'choose a valid class {class_list}')
@@ -239,10 +251,14 @@ class Sheet_commands(commands.Cog):
             sheet = collection.find_one({"player" : player})
 
             await printer.sheet_reader(ctx, sheet)
+            await printer.bonds_reader(ctx, sheet["bonds"])
+            await printer.inventory_reader(ctx, sheet["inventory"])
+
+            
     
     ## Read - $view_sheet
     @commands.command()
-    async def read(self, ctx):
+    async def read_sheet(self, ctx):
         player = ctx.author.name
         printer = Printer()
 
@@ -252,7 +268,28 @@ class Sheet_commands(commands.Cog):
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
+    @commands.command()
+    async def read_bonds(self, ctx):
+        player = ctx.author.name
+        printer = Printer()
 
+        if collection.find_one({"player": player}):
+            sheet = collection.find_one({"player" : player})
+            await printer.bonds_reader(ctx, sheet)
+        else:
+            await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
+
+    @commands.command()
+    async def view_inventory(self, ctx):
+        player = ctx.author.name
+        printer = Printer()
+
+        if collection.find_one({"player": player}):
+            sheet = collection.find_one({"player" : player})
+            await printer.inventory_reader(ctx, sheet["inventory"])
+        else:
+            await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
+    
     ## Update - $lvl_up  ## this is kind of screwed up now that we've added inventory and bonds 
     # probably best to also not update the sheet on every change 
     # but to send it all up on the end as a single update
