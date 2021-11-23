@@ -194,7 +194,9 @@ class Sheet_commands(commands.Cog):
             await printer.bonds_reader(ctx, sheet["bonds"])
             await printer.inventory_reader(ctx, sheet["inventory"])
 
-    ## Read - $view_sheet
+    ## Read ##
+    
+    # $read_sheet - show basic skill sheet 
     @commands.command()
     async def read_sheet(self, ctx):
         player = ctx.author.name
@@ -206,6 +208,7 @@ class Sheet_commands(commands.Cog):
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
+    # $read_bonds - show characters bonds
     @commands.command()
     async def read_bonds(self, ctx):
         player = ctx.author.name
@@ -217,6 +220,7 @@ class Sheet_commands(commands.Cog):
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
+    # $view-items - shows characters inventory
     @commands.command()
     async def view_items(self, ctx):
         player = ctx.author.name
