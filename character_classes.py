@@ -88,6 +88,7 @@ bard = {
         "character-name is often the butt of my jokes.",
         "I am writting a ballad about the adventures of character-name."
     ],
+    'starting-gear': []
 }
 cleric = {
     'hp': 8,
@@ -98,6 +99,7 @@ cleric = {
         "character-name is in constant danger, I will keep them safe.",
         "I am working on converting character-name to my faith."
     ],
+    'starting-gear': []
 }
 druid = {
     'hp': 6,
@@ -108,6 +110,7 @@ druid = {
         "I have shown character-name a secret rite of the land.",
         "character-name has tasted my blood and I theirs. We are bound by it."
     ],
+    'starting-gear': []
 }
 fighter = {
     'hp': 10,
@@ -117,7 +120,8 @@ fighter = {
         "I have sworn to protect character-name",
         "I worry about the ability of character-name to survice in the dungeon",
         "character-name is soft, but I will make them hard like me"
-    ]
+    ],
+    'starting-gear': []
 }
 immolator = {
     'hp': 4,
@@ -126,7 +130,8 @@ immolator = {
         "character-name has felt the hellish touch of fire, now they know my strength.",
         "I will teach character-name the true meaning of sacrifice.",
         "I cast somthing into the fire for character-name and still owe them their due."
-    ]
+    ],
+    'starting-gear': []
 }
 paladin = {
     'hp': 10,
@@ -136,7 +141,8 @@ paladin = {
         "character-name has stoof by me in battle and can be trusted completely.",
         "I respect the beliefs of character-name but hope they someday see the true way.",
         "character-name is a brave soul, I have much to learn from them"
-    ]
+    ],
+    'starting-gear': []
 }
 ranger = {
     'hp': 8,
@@ -146,7 +152,8 @@ ranger = {
         "character-name is a friend of nature, so I will be their friend as well.",
         "character-name has no respect for nature so I have no respect for them.",
         "character-name does not understand life in the wild so I will teach them"
-    ]
+    ],
+    'starting-gear': []
 }
 thief = {
     'hp': 6,
@@ -156,7 +163,8 @@ thief = {
         "character-name has my back when things go wrong",
         "character-name knows incriminating details about me.",
         "character-name and I have a con running"
-    ]
+    ],
+    'starting-gear': []
 }
 wizard = {
     'hp': 4,
@@ -165,6 +173,6 @@ wizard = {
         "character-name will play an important role in the events to come. I have seen it!",
         "character-name is keeping an immportant secret from me.",
         "character-name is woefully misinformed about the world; I will teach them all that I can.",
-        
-    ]
+    ],
+    'starting-gear': []
 }

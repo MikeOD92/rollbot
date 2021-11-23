@@ -49,65 +49,6 @@ class Sheet_commands(commands.Cog):
         }
         return (switch.get(i))
 
-    def class_damage(self, i):
-        switch = {
-            'barbarian': barbarian['damage'],
-            'bard': bard['damage'],
-            'cleric': cleric['damage'],
-            'druid': druid['damage'],
-            'fighter': fighter['damage'],
-            'immolator': immolator['damage'],
-            'paladin': paladin['damage'],
-            'ranger': ranger['damage'],
-            'thief': thief['damage'],
-            'wizard': wizard['damage'],
-        }
-        return str(switch.get(i))
-
-    def class_bonds(self, i):
-        switch = {
-            'barbarian': barbarian['bonds'],
-            'bard': bard['bonds'],
-            'cleric': cleric['bonds'],
-            'druid': druid['bonds'],
-            'fighter': fighter['bonds'],
-            'immolator': immolator['bonds'],
-            'paladin': paladin['bonds'],
-            'ranger': ranger['bonds'],
-            'thief': thief['bonds'],
-            'wizard': wizard['bonds'],
-        }
-        return switch.get(i)
-
-    def class_hp(self, i):
-        switch = {
-            'barbarian': barbarian['hp'],
-            'bard': bard['hp'],
-            'cleric': cleric['hp'],
-            'druid': druid['hp'],
-            'fighter': fighter['hp'],
-            'immolator': immolator['hp'],
-            'paladin': paladin['hp'],
-            'ranger': ranger['hp'],
-            'thief': thief['hp'],
-            'wizard': wizard['hp'],
-        }
-        return switch.get(i)
-    
-    def class_gear(self, i):
-        switch = {
-            'barbarian': barbarian["starting-gear"],
-            # 'bard': bard["starting-gear"],
-            # 'cleric': cleric["starting-gear"],
-            # 'druid': druid["starting-gear"],
-            # 'fighter': fighter["starting-gear"],
-            # 'immolator': immolator["starting-gear"],
-            # 'paladin': paladin["starting-gear"],
-            # 'ranger': ranger["starting-gear"],
-            # 'thief': thief["starting-gear"],
-            # 'wizard': wizard["starting-gear"],
-        }
-        return switch.get(i)
 ###################################
     @commands.Cog.listener()
     async def on_ready(self):
@@ -191,9 +132,9 @@ class Sheet_commands(commands.Cog):
                         else:
                             await ctx.channel.send(f'choose a valid value {starting_stats}')
             
-            player_sheet['hitpoints'] = int(player_sheet['constitution']) + self.class_hp(player_sheet["class"])
+            player_sheet['hitpoints'] = int(player_sheet['constitution']) + self.class_switch(player_sheet["class"], "hp")
 
-            inventory = self.class_gear(player_sheet["class"])
+            inventory = self.class_switch(player_sheet["class"], "starting-gear")
 
             for i in inventory:
                 if type(i) == list:
@@ -338,7 +279,7 @@ class Sheet_commands(commands.Cog):
         player = ctx.author
         sheet = collection.find_one({"player": player.name})
 
-        bonds = self.class_bonds(sheet["class"])
+        bonds = self.class_switch(sheet["class"], "bonds")
         guild = self.client.get_guild(player.guild.id)
         players = []
 
