@@ -275,12 +275,12 @@ class Sheet_commands(commands.Cog):
 
         if collection.find_one({"player": player}):
             sheet = collection.find_one({"player" : player})
-            await printer.bonds_reader(ctx, sheet)
+            await printer.bonds_reader(ctx, sheet['bonds'])
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
     @commands.command()
-    async def view_inventory(self, ctx):
+    async def view_items(self, ctx):
         player = ctx.author.name
         printer = Printer()
 

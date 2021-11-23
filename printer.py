@@ -34,24 +34,11 @@ class Printer():
         await ctx.channel.send(text)
 
     async def bonds_reader(self, ctx, data):
-        for b in data["bonds"]:
-            print (b)
-        # i have no idea why earlier when this was on line 8 it brought it in as a list and not it things its a string.  
-
-
-        # print(data)
-        # bonds = data["bonds"]
-
-        # print (bonds)
-        # print (type(bonds))
-        # for b in data:
-        #     # bonds = bonds + f"-- {b} -- \n"
-        #     await ctx.channel.send(b)
-        # print("why is this is issue ///////////////")
-        # print(len(bonds))\
-    
-
-        # await ctx.channel.send(bonds)
+        bonds = "\n ---------| Bonds |--------- \n \n"
+        for b in data:
+            bonds = bonds + f"-- {b} -- \n"
+        
+        await ctx.channel.send(bonds)
 
     async def inventory_reader(self, ctx, data):
         inventory = f"\n ---------| Inventory |--------- \n \n"
