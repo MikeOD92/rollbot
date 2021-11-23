@@ -24,7 +24,7 @@ class Dice_commands(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("_____//// Roll bot has loaded dice commands////-----") # on ready should move to main.py
+        print("_____//// Roll bot has loaded dice commands////-----")
 
     @commands.command()
     async def hey(self, ctx):

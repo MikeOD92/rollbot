@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 #######
 from printer import Printer
-from character_classes import class_list, barbarian, bard, cleric, druid, fighter, immolator, paladin, ranger, thief, wizard
+from character_classes import Class_info
 ## both of these imports should be reworked to be class based ie: not floating functions. 
 
 load_dotenv()
@@ -22,30 +22,28 @@ class Sheet_commands(commands.Cog):
     def __init__(self, client):
         self.client = client
         
-    # def check(self, ctx):
-    #     msg = ctx.author
-    #     print("is this working")
-    #     print(msg)
-    #     def inner(msg):
-    #         return msg == ctx.author
-    #     return inner
+    def check(self, ctx):
+        def inner(msg):
+            return msg == ctx.author
+        return inner
 
     # need to make the check work
 
-    # switches 
-    # - these switches can maybe be reduced down to a single function which takes another argument for what to grab 
+#### Switch statement to get class attr info
+
     def class_switch(self, i, attr):
+        classes = Class_info()
         switch = {
-            'barbarian': barbarian[attr],
-            'bard': bard[attr],
-            'cleric': cleric[attr],
-            'druid': druid[attr],
-            'fighter': fighter[attr],
-            'immolator': immolator[attr],
-            'paladin': paladin[attr],
-            'ranger': ranger[attr],
-            'thief': thief[attr],
-            'wizard': wizard[attr],
+            'barbarian': classes.barbarian[attr],
+            'bard': classes.bard[attr],
+            'cleric': classes.cleric[attr],
+            'druid': classes.druid[attr],
+            'fighter': classes.fighter[attr],
+            'immolator': classes.immolator[attr],
+            'paladin': classes.paladin[attr],
+            'ranger': classes.ranger[attr],
+            'thief': classes.thief[attr],
+            'wizard': classes.wizard[attr],
         }
         return (switch.get(i))
 
@@ -62,6 +60,7 @@ class Sheet_commands(commands.Cog):
     async def create_char(self,ctx):
         player = ctx.message.author.name
         printer = Printer()
+        classes = Class_info()
 
         #check if player has char sheet
             
@@ -102,22 +101,22 @@ class Sheet_commands(commands.Cog):
                 elif i == 'armor' or i == "hitpoints" or i == "damage" or i == "bonds" or i == "inventory":
                     pass
                 elif i == "class":
-                    await ctx.channel.send(f" choose your character's class from this list: {class_list}")
+                    await ctx.channel.send(f" choose your character's class from this list: {classes.class_list}")
 
                     valid_ans = False
                     while valid_ans == False:
                         #### this is how we would implement check that we need to test
                         response = await self.client.wait_for('message') #, check=self.check(ctx)  
 
-                        if response.content in class_list:
+                        if response.content in classes.class_list:
                             player_sheet[i] = response.content
-                            print(player_sheet[i])
+                            # print(player_sheet[i])
                             player_sheet['damage'] = self.class_switch(response.content, "damage") #self.class_damage(response.content)
                             player_sheet['bonds'] = self.class_switch(response.content, 'bonds')
                             #self.class_bonds(response.content)
                             valid_ans = True
                         else:
-                            await ctx.channel.send(f'choose a valid class {class_list}')
+                            await ctx.channel.send(f'choose a valid class {classes.class_list}')
                 else:
                     await ctx.channel.send(f"choose a value from this list: {starting_stats} to assign to your {i}")
 
@@ -195,8 +194,6 @@ class Sheet_commands(commands.Cog):
             await printer.bonds_reader(ctx, sheet["bonds"])
             await printer.inventory_reader(ctx, sheet["inventory"])
 
-            
-    
     ## Read - $view_sheet
     @commands.command()
     async def read_sheet(self, ctx):
