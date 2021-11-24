@@ -27,7 +27,7 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f"cogs.{filename[:-3]}")
 
 # async def on_ready(ctx):
-#     print("_____//// Roll bot is Online ////-----")
+#     print("~`~`~.~.~`~`~`~. Roll_bot is online and ready ~_~_~_~_~_~_~_~")
 
 token = os.getenv('TOKEN')
 client.run(token)
