@@ -27,10 +27,6 @@ class Dice_commands(commands.Cog):
         print("_____//// Roll bot has loaded dice commands////-----")
 
     @commands.command()
-    async def hey(self, ctx):
-        await ctx.send("Hello it is I Roll_bot") #ping should move to main.py
-
-    @commands.command()
     async def damage(self, ctx):
         player = ctx.author.name
 

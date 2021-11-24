@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 #######
 from printer import Printer
 from character_classes import Class_info
-## both of these imports should be reworked to be class based ie: not floating functions. 
 
 load_dotenv()
 

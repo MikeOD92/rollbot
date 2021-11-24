@@ -70,17 +70,17 @@ class MyClient(discord.Client):
 
         # List users who are currently online and members of the guild. 
         if msg.startswith('/here'):
-            guild_id = message.author.guild.id
-            guild = client.get_guild(guild_id)
+            # guild_id = message.author.guild.id
+            # guild = client.get_guild(guild_id)
 
-            txt= ""
+            # txt= ""
             
-            for member in guild.members:
+            # for member in guild.members:
                 
-                if str(member.status) == 'online' and member.bot != True:
-                    txt = txt + member.name + ", "
+            #     if str(member.status) == 'online' and member.bot != True:
+            #         txt = txt + member.name + ", "
 
-            await message.channel.send(txt)
+            # await message.channel.send(txt)
         ################################################
 
 
