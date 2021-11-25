@@ -18,8 +18,9 @@ The first version of this bot with focus specificly on Dungeon World. Later it b
 + 
 
 ## Planned Changes
-  + Fix $lvl_up function 
-  + Add inventory for all Classes
-  + figure out way to deal with class specific moves and advanced moves
-  + $command functions for all basic moves shared by all players
+  + Fix $lvl_up function. 
+  + Add starting-inventory for all classes.
+  + create items and add to player inventory. 
+  + figure out way to deal with class specific moves and advanced moves.
+  + $command functions for all basic moves shared by all players.
   + appoint player to be Game Master and have set of moves specifc to them.  
