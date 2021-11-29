@@ -27,7 +27,7 @@ class Printer():
     async def inventory_reader(self, ctx, data):
         inventory = f"\n ---------| Inventory |--------- \n \n"
 
-        for i in data:
+        for i in data["inv_list"]:
             if i["info"] == "special-item":
                 inventory = inventory + "---" + i["name"] + " : "+ i["description"] + "---\n"
             elif i["info"] == "weapon":

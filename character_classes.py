@@ -78,7 +78,21 @@ class Class_info():
             "character-name is often the butt of my jokes.",
             "I am writting a ballad about the adventures of character-name."
         ],
-        'starting-gear': []
+        'starting-gear': [
+            {
+                "name":"Dungeon rations",
+                "info": "gear",
+                "uses": 5, 
+                "weight":1 
+            },
+            {
+                "name":"Dagger",
+                "info": "weapon",
+                "attr": ["hand"],
+                "damage": 0,
+                "weight": 1
+            },
+        ]
     }
     cleric = {
         'hp': 8,
