@@ -132,40 +132,6 @@ class Sheet_commands(commands.Cog):
             
             player_sheet['hitpoints'] = int(player_sheet['constitution']) + self.class_switch(player_sheet["class"], "hp")
 
-            # inventory = self.class_switch(player_sheet["class"], "starting-gear")
-
-            # for i in inventory:
-            #     if type(i) == list:
-            #         item_check = []
-            #         base_txt = "choose one of these item: \n ------------ \n "
-            #         for c in i: 
-            #             base_txt = base_txt + f" - {c['name']} \n"
-            #             item_check.append(c["name"])
-
-            #         await ctx.channel.send(base_txt)
-            #         item = await self.client.wait_for("message") #, check=self.check(ctx)
-            #         valid_ans = False
-            #         while valid_ans == False:
-            #             if item.content in item_check:
-            #                 player_sheet['inventory'].append(i[item_check.index(item.content)])
-            #                 await ctx.channel.send(f"{i[item_check.index(item.content)]['name']} has been added to your inventory")
-            #                 valid_ans = True
-            #             else:
-            #                 await ctx.channel.send("chose a valid item")
-            #                 item = await self.client.wait_for("message") #, check=self.check(ctx)
-            #     elif i["info"] == "special-item":
-
-            #         await ctx.channel.send(f" Your {i['name']} is {i['prompt']}, describe it.")
-            #         description = await self.client.wait_for("message") #, check=self.check(ctx) 
-
-            #         i["description"] = description.content
-            #         player_sheet["inventory"].append(i)
-
-            #     else: 
-            #         player_sheet['inventory'].append(i)
-            #         await ctx.channel.send(f" { i['name'] } has been added to your inventory")
-
-
             # print finished player-sheet
             await ctx.channel.send('player sheet:')
 
@@ -184,14 +150,12 @@ class Sheet_commands(commands.Cog):
                 "wisdom": player_sheet['wisdom'],
                 "charisma": player_sheet['charisma'],
                 "bonds" : player_sheet['bonds'],
-                # "inventory": player_sheet["inventory"]
                 })
 
             sheet = collection.find_one({"player" : player})
 
             await printer.sheet_reader(ctx, sheet)
             await printer.bonds_reader(ctx, sheet["bonds"])
-            # await printer.inventory_reader(ctx, sheet["inventory"])
 
     ## Read ##
     
@@ -219,18 +183,6 @@ class Sheet_commands(commands.Cog):
         else:
             await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
 
-    # # $view-items - shows characters inventory
-    # @commands.command()
-    # async def view_items(self, ctx):
-    #     player = ctx.author.name
-    #     printer = Printer()
-
-    #     if collection.find_one({"player": player}):
-    #         sheet = collection.find_one({"player" : player})
-    #         await printer.inventory_reader(ctx, sheet["inventory"])
-    #     else:
-    #         await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
-    
     ## Update - $lvl_up  ## this is kind of screwed up now that we've added inventory and bonds 
     # probably best to also not update the sheet on every change 
     # but to send it all up on the end as a single update

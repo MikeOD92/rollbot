@@ -85,7 +85,6 @@ class Inventory_commands(commands.Cog):
                 description = await self.client.wait_for("message") #, check=self.check(ctx) 
 
                 i["description"] = description.content
-                # player_sheet["inventory"].append(i)# so this needs to chnage to work with the new inventory collection. 
                 inv_obj["inv_list"].append(i)
             else: 
                 inv_obj["inv_list"].append(i)
@@ -98,18 +97,18 @@ class Inventory_commands(commands.Cog):
         printer = Printer()
         
         await printer.inventory_reader(ctx, player_inv)
-        
-    # $view-items - shows characters inventory
-    # @commands.command()
-    # async def view_items(self, ctx):
-    #     player = ctx.author.name
-    #     printer = Printer()
 
-    #     if collection.find_one({"player": player}):
-    #         sheet = collection.find_one({"player" : player})
-    #         await printer.inventory_reader(ctx, sheet["inventory"])
-    #     else:
-    #         await ctx.channel.send('You do not have a player sheet, create one by typing "/create-char" into the chat.')
+    # $view-items - shows characters inventory
+    @commands.command()
+    async def view_items(self, ctx):
+        player = ctx.author.name
+        printer = Printer()
+
+        if inv_collection.find_one({"player": player}):
+            player_inv = inv_collection.find_one({"player" : player})
+            await printer.inventory_reader(ctx, player_inv)
+        else:
+            await ctx.channel.send('You have not created your characters inventory yet. Type $start_gear into the chat to choose your starting gear.')
     
 
 def setup(client):
