@@ -110,6 +110,7 @@ class Inventory_commands(commands.Cog):
         else:
             await ctx.channel.send('You have not created your characters inventory yet. Type $start_gear into the chat to choose your starting gear.')
     
+    # $add_item - allows players to make new items and add them to their inventory
     @commands.command()
     async def add_item(self, ctx):
         player = ctx.author.name
@@ -157,8 +158,9 @@ class Inventory_commands(commands.Cog):
 
         inv_collection.replace_one({"player": player}, player_inv)
 
+    # $drop_item - lists players inventory and asks what item to drop / delete from inventory
 
-
+    # $encumbered - checks is player is overencumbered or not 
 
 
 def setup(client):
