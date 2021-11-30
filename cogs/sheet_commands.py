@@ -16,6 +16,7 @@ URI = os.environ['MONGODB_URI']
 cluster = MongoClient(URI)
 db = cluster["Roll_bot"]
 collection = db["character_sheets"]
+inv_collection = db["inventory"]
 
 class Sheet_commands(commands.Cog):
     def __init__(self, client):
@@ -266,12 +267,14 @@ class Sheet_commands(commands.Cog):
     async def delete_character(self, ctx):
         player = ctx.message.author
         sheet = collection.find_one({"player": player.name}) # data is just the parsed out bit and deleteing it wont affect the db
+
         if sheet:
             await ctx.channel.send(f"are you sure you want to delete your character {sheet['name']} - Y / N ")
             answer = await self.client.wait_for('message') #, check=self.check(ctx) 
             if answer.content.upper() == 'Y':
                 await ctx.channel.send('your character sheet has been destroyed')
                 collection.delete_one({"player": player.name})
+                inv_collection.delete_one({"player": player.name})
             else:
                 await ctx.channel.send('character not deleted')
                 return 

@@ -44,7 +44,7 @@ class Inventory_commands(commands.Cog):
 ###################################
     @commands.Cog.listener()
     async def on_ready(self):
-        print("_____//// Roll bot has loaded inventory_commands ////-----") 
+        print("~~~.~.~.~//// Roll bot has loaded inventory_commands ~~~~~.~.~.~//") 
 
     @commands.command()
     async def starting_gear(self, ctx):
@@ -62,6 +62,7 @@ class Inventory_commands(commands.Cog):
             if type(i) == list:
                 item_check = []
                 base_txt = "choose one of these item: \n ------------ \n "
+            
                 for c in i: 
                     base_txt = base_txt + f" - {c['name']} \n"
                     item_check.append(c["name"])
@@ -72,7 +73,6 @@ class Inventory_commands(commands.Cog):
                 while valid_ans == False:
                     if item.content in item_check:
                         inv_obj["inv_list"].append(i[item_check.index(item.content)])
-                        # player_sheet['inventory'].append(i[item_check.index(item.content)])
                         await ctx.channel.send(f"{i[item_check.index(item.content)]['name']} has been added to your inventory")
                         valid_ans = True
                     else:
@@ -110,6 +110,56 @@ class Inventory_commands(commands.Cog):
         else:
             await ctx.channel.send('You have not created your characters inventory yet. Type $start_gear into the chat to choose your starting gear.')
     
+    @commands.command()
+    async def add_item(self, ctx):
+        player = ctx.author.name
+        player_inv = inv_collection.find_one({"player": player})
+
+        new_item = {}
+
+        await ctx.channel.send("what is the name of the item you would like to add to your inventory?")
+        name = await self.client.wait_for('message')
+        new_item['name'] = name.content
+
+        types = ["weapon", "armor", "gear", "special item"]
+        valid_ans = False
+
+        while valid_ans == False:
+            await ctx.channel.send("which of the following best describes this item: 'Weapon', 'Armor', 'Gear', or a 'Special item' ")
+            info = await self.client.wait_for('message')
+            if info.content.lower() in types:
+                new_item["info"] = info.content.lower()
+                valid_ans = True
+            else:
+                await ctx.channel.send("select a valid item type.")
+
+        if new_item["info"] == "weapon":
+            await ctx.channel.send(" list any attributes this weapon has in a comma seperated list.")
+            attr = await self.client.wait_for("message")
+
+            attr_list = attr.content.split(",")
+            new_item["attr"] = attr_list
+
+            await ctx.channel.send("what is this weapons damage modifier?")
+            damage = await self.client.wait_for("message")
+
+            new_item["damage"] = str(damage.content)
+
+            await ctx.channel.send("what is this weapons weight?")
+            weight = await self.client.wait_for("message")
+
+            new_item["weight"] = str(weight.content)
+        else:
+            print("only weapons work at this time.")
+
+        ### need to flush out questions so we can build items correctly based on type
+        player_inv["inv_list"].append(new_item)
+
+        inv_collection.replace_one({"player": player}, player_inv)
+
+
+
+
 
 def setup(client):
     client.add_cog(Inventory_commands(client))
