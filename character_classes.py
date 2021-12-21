@@ -138,7 +138,8 @@ class Class_info():
                 }
             ],
             # choose your armament
-            # need to figure out a better system for choosing gear this feels clunky. 
+            # need to figure out a better system for choosing gear this feels clunky.
+            # this one is particualrlly weird because we have to chose between one item or three 
         ]
     }
     cleric = {
