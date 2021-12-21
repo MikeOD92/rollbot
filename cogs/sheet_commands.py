@@ -190,41 +190,27 @@ class Sheet_commands(commands.Cog):
     @commands.command()
     async def lvl_up(self, ctx):
         player = ctx.author.name
-        sheet = collection.find_one({"player" : player})
+        query = { "player" : player }
+        sheet = collection.find_one(query)
         printer = Printer()
-                
-        player_sheet = {
-            "player" : sheet['player'],      
-            "name": sheet['name'],
-            "look": sheet['look'],
-            "class": sheet['class'],
-            "armor": sheet['armor'],
-            "hitpoints": sheet['hitpoints'], 
-            "damage": sheet['damage'],
-            "strength": sheet['strength'],
-            "dexterity": sheet['dexterity'],
-            "constitution": sheet['constitution'],
-            "inteligence": sheet['inteligence'],
-            "wisdom": sheet['wisdom'],
-            "charisma": sheet['charisma']
-        }
-        for key in player_sheet:
-            if key == '_id' or key == 'player' or key == "class":
+
+        for key in sheet:
+            if key == '_id' or key == "player" or key == "class" or key=="bonds" or key=="damage":
                 pass
-            else:
+            else: 
                 await ctx.channel.send(f" would you like to update your {key}? y/n")
-                answer = await self.client.wait_for('message') #, check=self.check(ctx)
+                answer = await self.client.wait_for('message')
                 if answer.content.upper() == 'Y':
-                    await ctx.channel.send(f" {key}:{player_sheet[key]} should equal what?")
+                    await ctx.channel.send(f" {key}:{sheet[key]} should equal what?")
                     update_answer = await self.client.wait_for('message') #, check=self.check(ctx)
-                    player_sheet[key] = update_answer.content
-                    collection.replace_one({'player': player }, player_sheet, upsert=False)
+                    update = {"$set": {key: update_answer.content}}
+                    collection.update_one(query, update)
                 else:
-                    await ctx.channel.send('okay then')
+                    pass
 
         sheet = collection.find_one({"player" : player})          
         await printer.sheet_reader(ctx, sheet)
-    
+
 
     # bonds - $bonds
     @commands.command()
