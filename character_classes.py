@@ -85,13 +85,60 @@ class Class_info():
                 "uses": 5, 
                 "weight":1 
             },
-            {
-                "name":"Dagger",
-                "info": "weapon",
-                "attr": ["hand"],
-                "damage": 0,
-                "weight": 1
-            },
+            [
+                {
+                    "name": "Mandolin", 
+                    "info": "special-item",
+                    "prompt": "Your father's mandolin, repaired",
+                    "description": "" 
+                },
+                {
+                    "name": "Lute", 
+                    "info": "special-item",
+                    "prompt": "A fine Lute, a gift from a noble",
+                    "description": "" 
+                }, 
+                {
+                    "name": "Pipes", 
+                    "info": "special-item",
+                    "prompt": "The Pipes with which you courted your first love.",
+                    "description": "" 
+                }, 
+                {
+                    "name": "Horn", 
+                    "info": "special-item",
+                    "prompt": "A stolen horn",
+                    "description": "" 
+                }, 
+                {
+                    "name": "Fiddle", 
+                    "info": "special-item",
+                    "prompt": "A fiddle never before played",
+                    "description": "" 
+                }, 
+                {
+                    "name": "Songbook", 
+                    "info": "special-item",
+                    "prompt": "A songbook in a forgotten tongue",
+                    "description": "" 
+                }, 
+            ],
+            [
+                {
+                    "name": "Leather Armor",
+                    "info": "armor",
+                    "armor": 1,
+                    "weight": 1
+                },
+                {
+                    "name": "Ostentatious Clothes",
+                    "info": "armor",
+                    "armor": 0,
+                    "weight": 0
+                }
+            ],
+            # choose your armament
+            # need to figure out a better system for choosing gear this feels clunky. 
         ]
     }
     cleric = {
